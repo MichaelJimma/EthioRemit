@@ -1,0 +1,11 @@
+﻿1. Install packages 
+	Microsoft.EntityFrameworkCore.Design
+	Microsoft.EntityFrameworkCore.SqlServer
+	AutoMapper.Extensions.Microsoft.DependencyInjection
+
+2. Executed scaffold command in the package manager console.
+	Scaffold-DbContext "Server=MJ-SURFACE;Database=EthioRemit;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Entities -force
+
+3. Add a constractor in PowerHubClientContext class:
+	public EthioRemitContext(DbContextOptions<EthioRemitContext> options) 
+	: base(options) { }
