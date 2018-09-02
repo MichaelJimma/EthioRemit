@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
   }
 
   getClientTypes() {
-    this._httpService.get('http://localhost:51797/api/clienttypes')
+    this._httpService.get('http://localhost:51798/api/clienttypes')
       .subscribe(response => {
         this.apiValues = response;
       }, error => {
