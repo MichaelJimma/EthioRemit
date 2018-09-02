@@ -1,0 +1,26 @@
+﻿CREATE TABLE [dbo].[Orders] (
+    [OrderId]          UNIQUEIDENTIFIER NOT NULL,
+    [ClientId]         UNIQUEIDENTIFIER NOT NULL,
+    [SenderName]       NVARCHAR (150)   NOT NULL,
+    [SenderPhone]      NVARCHAR (15)    NULL,
+    [SenderEmail]      NVARCHAR (150)   NULL,
+    [ReceiverName]     NVARCHAR (150)   NOT NULL,
+    [ReceiverPhone]    NVARCHAR (15)    NULL,
+    [City]             NVARCHAR (150)   NULL,
+    [AccountNumber]    NVARCHAR (150)   NULL,
+    [Bank]             NVARCHAR (150)   NULL,
+    [AmountCad]        DECIMAL (9, 2)   NOT NULL,
+    [AmountBirr]       DECIMAL (9, 2)   NOT NULL,
+    [ExchangeRate]     DECIMAL (6, 2)   NOT NULL,
+    [OrderDescription] NVARCHAR (2000)  NULL,
+    [HoldTransfer]     BIT              DEFAULT ((0)) NULL,
+    [Transferred]      BIT              DEFAULT ((0)) NULL,
+    [CreatedBy]        UNIQUEIDENTIFIER NOT NULL,
+    [DatetimeCreated]  DATETIME         NOT NULL,
+    [ModifiedBy]       UNIQUEIDENTIFIER NOT NULL,
+    [DatetimeModified] DATETIME         NOT NULL,
+    [IsDeleted]        BIT              DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([OrderId] ASC),
+    CONSTRAINT [FK_Orders_Clients] FOREIGN KEY ([ClientId]) REFERENCES [dbo].[Clients] ([ClientId])
+);
+
