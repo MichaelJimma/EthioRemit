@@ -2,11 +2,14 @@ using API.ExtensionMethods;
 using API.ValidateModel;
 using AutoMapper;
 using DAL.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace API
 {
@@ -29,9 +32,25 @@ namespace API
           options.UseSqlServer(Configuration.GetConnectionString("EthioRemitConnection")));
 
       services.AddOptions();
+
+      //Automapper configuration
       services.AddAutoMapper();
       Mapper.Initialize(cfg => cfg.AddProfile<AutoMapperProfile.AutoMapperProfile>());
 
+      //JWT configuration
+      services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+          options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+          {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+            ValidateIssuer = false,
+            ValidateAudience = false
+          };
+        });
+
+      //MVC configuration
       services.AddMvc(config =>
       {
         config.ReturnHttpNotAcceptable = true;//ReturnHttpNotAcceptable forces the reesponse to match exactly the supported content type.
@@ -55,6 +74,7 @@ namespace API
       app.UseCors(q => q.AllowAnyOrigin()
       .AllowAnyMethod().AllowAnyHeader());
 
+      app.UseAuthentication();
       app.UseMvc();
       app.UseDefaultFiles();
       app.UseStaticFiles();

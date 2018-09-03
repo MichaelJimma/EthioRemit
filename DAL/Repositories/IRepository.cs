@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace DAL.Repositories
@@ -11,10 +12,12 @@ namespace DAL.Repositories
        where D : DbContext
     {
         IQueryable<T> GetAll();
-        Task<T> GetSingle(Guid id);
-        Task<bool> Add(T entity);
+        Task<T> GetById(Guid id);
+        Task<T> GetSingle(Expression<Func<T, bool>> filter = null);
+        Task<bool> GetAny(Expression<Func<T, bool>> filter = null);
+        Task<bool> Add(T entity, bool overrideCurrentUser = false);
         Task<bool> Delete(T entity);
-        Task<bool> Update(T entity);
+        Task<bool> Update(T entity, bool overrideCurrentUser = false);
         Task<bool> Save();
         int Count();
     }

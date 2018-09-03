@@ -1,6 +1,7 @@
-﻿using BLL.Services;
+using BLL.Services;
 using DAL.Entities;
 using DAL.Entities.QueryParameters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 namespace API.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     public class ClientTypesController : Controller
     {
         private IClientTypeService _clientTypeService;
@@ -19,6 +21,7 @@ namespace API.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(List<ClientTypes>), 200)]
+
         public IActionResult GetClientTypes(Pagination pagination)
         {
 

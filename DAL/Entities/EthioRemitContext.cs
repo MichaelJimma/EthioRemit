@@ -1,11 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace DAL.Entities
 {
     public partial class EthioRemitContext : DbContext
     {
+        public EthioRemitContext()
+        {
+        }
+
         public EthioRemitContext(DbContextOptions<EthioRemitContext> options)
-            : base(options) {}
+            : base(options)
+        {
+        }
 
         public virtual DbSet<Accounts> Accounts { get; set; }
         public virtual DbSet<AspNetRoleClaims> AspNetRoleClaims { get; set; }
@@ -29,13 +37,14 @@ namespace DAL.Entities
         public virtual DbSet<PaymentStatus> PaymentStatus { get; set; }
         public virtual DbSet<Status> Status { get; set; }
         public virtual DbSet<StatusDetails> StatusDetails { get; set; }
+        public virtual DbSet<Users> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer(@"Server=MJ-SURFACE;Database=EthioRemit;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=MJ-SURFACE;Database=EthioRemit;Trusted_Connection=True;");
             }
         }
 
@@ -302,6 +311,8 @@ namespace DAL.Entities
 
                 entity.Property(e => e.ExchangeRate).HasColumnType("decimal(6, 2)");
 
+                entity.Property(e => e.HoldTransfer).HasDefaultValueSql("((0))");
+
                 entity.Property(e => e.OrderDescription).HasMaxLength(2000);
 
                 entity.Property(e => e.ReceiverName)
@@ -317,6 +328,8 @@ namespace DAL.Entities
                     .HasMaxLength(150);
 
                 entity.Property(e => e.SenderPhone).HasMaxLength(15);
+
+                entity.Property(e => e.Transferred).HasDefaultValueSql("((0))");
 
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.Orders)
@@ -441,6 +454,30 @@ namespace DAL.Entities
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Status_StatusDetail");
+            });
+
+            modelBuilder.Entity<Users>(entity =>
+            {
+                entity.HasKey(e => e.UserId);
+
+                entity.Property(e => e.UserId).ValueGeneratedNever();
+
+                entity.Property(e => e.DatetimeCreated).HasColumnType("datetime");
+
+                entity.Property(e => e.DatetimeModified).HasColumnType("datetime");
+
+                entity.Property(e => e.PasswordHash)
+                    .IsRequired()
+                    .HasMaxLength(512);
+
+                entity.Property(e => e.PasswordSalt)
+                    .IsRequired()
+                    .HasMaxLength(512);
+
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasMaxLength(65)
+                    .IsUnicode(false);
             });
         }
     }

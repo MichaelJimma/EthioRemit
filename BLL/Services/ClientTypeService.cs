@@ -33,7 +33,7 @@ namespace BLL.Services
 
         public async Task<(bool deleted, ClientTypes clientType)> DeleteClientType(Guid clientTypeId)
         {
-            var existingClientType = await _clientTypeRepository.GetSingle(clientTypeId);
+            var existingClientType = await _clientTypeRepository.GetById(clientTypeId);
             if (existingClientType == null)
             {
                 return (false, null);
@@ -65,7 +65,7 @@ namespace BLL.Services
 
         public async Task<ClientTypeDto> GetClientType(Guid clientTypeId)
         {
-            var clientType = await _clientTypeRepository.GetSingle(clientTypeId);
+            var clientType = await _clientTypeRepository.GetById(clientTypeId);
 
             var clientTypeDto = Mapper.Map<ClientTypeDto>(clientType);
 
@@ -74,7 +74,7 @@ namespace BLL.Services
 
         public async Task<(bool updated, ClientTypes clientType)> UpdateClientType(Guid clientTypeId, ClientTypeDto clientTypeDto)
         {
-            var existingClientType = await _clientTypeRepository.GetSingle(clientTypeId);
+            var existingClientType = await _clientTypeRepository.GetById(clientTypeId);
 
             if (existingClientType == null)
             {
