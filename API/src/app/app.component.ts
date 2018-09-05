@@ -12,7 +12,7 @@ export class AppComponent implements OnInit {
   apiValues: any;
 
   ngOnInit() {
-    this.getClientTypes();
+    //this.getClientTypes();
   }
 
   getClientTypes() {
