@@ -14,69 +14,69 @@ using System.Threading.Tasks;
 
 namespace API.Controllers
 {
-  [Route("api/[controller]")]
-  [ApiController]//this allow us to emit the use of [FromBody] and check ModelState
-  public class UserController : ControllerBase
-  {
-    private readonly IUserService _service;
-    private readonly IConfiguration _config;
-
-    public UserController(IUserService service, IConfiguration config)
+    [Route("api/[controller]")]
+    [ApiController]//this allow us to emit the use of [FromBody] and check ModelState
+    public class UserController : ControllerBase
     {
-      _service = service;
-      _config = config;
-    }
+        private readonly IUserService _service;
+        private readonly IConfiguration _config;
 
-    [HttpPost("Register")]
-    public async Task<IActionResult> Register(UserRegisterDto userRegisterDto)
-    {
-      userRegisterDto.Username = userRegisterDto.Username.ToLower();
+        public UserController(IUserService service, IConfiguration config)
+        {
+            _service = service;
+            _config = config;
+        }
 
-      if (await _service.UserExists(userRegisterDto.Username))
-        return BadRequest("Username already exist");
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register(UserRegisterDto userRegisterDto)
+        {
+            userRegisterDto.Username = userRegisterDto.Username.ToLower();
 
-      var userToCreate = new Users
-      {
-        Username = userRegisterDto.Username
-      };
+            if (await _service.UserExists(userRegisterDto.Username))
+                return BadRequest("Username already exist");
 
-      var createdUser = await _service.Register(userToCreate, userRegisterDto.Password);
+            var userToCreate = new Users
+            {
+                Username = userRegisterDto.Username
+            };
 
-      return StatusCode(201);
-    }
+            var createdUser = await _service.Register(userToCreate, userRegisterDto.Password);
 
-    [HttpPost("Login")]
-    public async Task<IActionResult> Login(UserLoginDto userLoginDto)
-    {
-      var user = await _service.Login(userLoginDto.Username.ToLower(), userLoginDto.Password);
+            return StatusCode(201);
+        }
 
-      if (user == null)
-        return Unauthorized();
-      var claims = new[]
-      {
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login(UserLoginDto userLoginDto)
+        {
+            var user = await _service.Login(userLoginDto.Username.ToLower(), userLoginDto.Password);
+
+            if (user == null)
+                return Unauthorized();
+            var claims = new[]
+            {
         new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
         new Claim(ClaimTypes.Name, user.Username)
       };
 
-      var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
 
-      var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-      var tokenDescriptor = new SecurityTokenDescriptor
-      {
-        Subject = new ClaimsIdentity(claims),
-        Expires = DateTime.Now.AddDays(1),
-        SigningCredentials = creds
-      };
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(1),
+                SigningCredentials = creds
+            };
 
-      var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenHandler = new JwtSecurityTokenHandler();
 
-      var token = tokenHandler.CreateToken(tokenDescriptor);
+            var token = tokenHandler.CreateToken(tokenDescriptor);
 
-      return Ok(new
-      {
-        token = tokenHandler.WriteToken(token)
-      });
+            return Ok(new
+            {
+                token = tokenHandler.WriteToken(token)
+            });
+        }
     }
-  }
 }
