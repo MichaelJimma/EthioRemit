@@ -7,10 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="SPA\src\app\routes.ts" />
     <None Remove="SPA\src\app\_services\error.interceptor.ts" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="SPA\src\app\_guards\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
@@ -28,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="SPA\src\app\routes.ts" />
     <TypeScriptCompile Include="SPA\src\app\_services\error.interceptor.ts" />
   </ItemGroup>
 
